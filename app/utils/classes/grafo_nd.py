@@ -7,366 +7,480 @@ Membros do Grupo:
 3. Maria Julia de Pádua - 10400630
 
 Síntese do Conteúdo:
-A classe `TGrafoND` implementa um grafo não dirigido utilizando uma matriz 
-de adjacência, onde os vértices representam livros e as arestas representam 
-relações entre eles, com pesos que podem indicar similaridade ou conexão. 
-A classe inclui métodos para manipulação do grafo, como a inserção e remoção 
-de vértices e arestas, leitura de dados de um arquivo, e exibição da matriz de 
-adjacência. Também possui funcionalidades para verificar a conectividade do grafo, 
-utilizando busca em profundidade e em largura, e para identificar e exibir as 
-componentes conectadas. Por fim, é capaz de gerar um grafo reduzido que representa 
-as componentes conectadas do grafo original, mostrando como as diferentes partes 
-do grafo estão interligadas.
+O menu interativo da aplicação é projetado para facilitar a interação do usuário com as 
+funcionalidades disponíveis para gerenciar o grafo. Ele apresenta uma lista de opções 
+numeradas, permitindo que o usuário selecione a operação desejada de forma intuitiva. 
+As opções incluem a adição e remoção de vértices, que possibilitam ao usuário incluir 
+ou excluir livros do grafo. Também há a possibilidade de adicionar e remover arestas, 
+permitindo a criação ou a eliminação de relações entre os livros.
+
+Além disso, o menu oferece opções para visualizar a lista de adjacência do grafo, 
+proporcionando uma representação clara das conexões entre os livros. O usuário pode 
+também acessar funções para carregar dados a partir de um arquivo, facilitando a 
+importação de informações, e salvar a estrutura do grafo em um arquivo para registro 
+ou análise posterior. Outra funcionalidade disponível no menu é a geração de um gráfico 
+visual do grafo, utilizando a biblioteca PyVis, o que permite uma visualização mais 
+intuitiva das relações entre os livros.
+
+O menu é projetado para ser interativo e responsivo, com a opção de sair da aplicação 
+a qualquer momento. Essa abordagem interativa garante que o usuário possa navegar 
+facilmente entre as opções e realizar as operações desejadas de maneira eficiente.
+
 """
 
-from collections import deque
+import ast
+import sys
+from pathlib import Path
+from pyvis.network import Network
 
-from loguru import logger
+DIR_ROOT = str(Path(__file__).parents[3])
+if DIR_ROOT not in sys.path:
+    sys.path.append(DIR_ROOT)
+
+try:
+    from app.utils.classes.vertice import Vertice
+    from app.utils.classes.aresta import Aresta
+except ModuleNotFoundError:
+    from utils.classes.vertice import Vertice
+    from utils.classes.aresta import Aresta
+
 
 class TGrafoND:
     def __init__(self):
         """
-        INICIALIZA O GRAFO COM UMA MATRIZ DE ADJACÊNCIA
-        DE TAMANHO `VERTICES` x `VERTICES`.
+        Inicializa o grafo não direcionado com lista de adjacência.
+        """
+        self.vertices = []  # Lista de vértices
+        self.lista_adjacencia = (
+            {}
+        )  # Lista de adjacência (dicionário onde cada vértice aponta para uma lista de arestas)
+
+    def insereVertice(self, nome_livro: str):
+        """
+        Insere um vértice no grafo.
 
         Args:
-            vertices (int): NÚMERO DE VÉRTICES DO GRAFO.
+            nome_livro (str): Nome do livro que o vértice irá representar.
         """
+        novo_vertice = Vertice(len(self.vertices), nome_livro)
+        self.vertices.append(novo_vertice)
+        self.lista_adjacencia[novo_vertice.id] = (
+            []
+        )  # Inicializa a lista de adjacência para o novo vértice
 
-        # INICIALIZA O NÚMERO DE VÉRTICES
-        self.vertices = 0
-        # CRIA A MATRIZ DE ADJACÊNCIA COM TODOS OS VALORES INICIALIZADOS EM 0
-        self.grafo = []
-        self.livros = {}
+    def removeVertice(self, vertice_id: int):
+        """
+        Remove um vértice do grafo, bem como todas as arestas associadas a ele.
+
+        Args:
+            vertice_id (int): O índice do vértice a ser removido.
+        """
+        # Remove as arestas que conectam outros vértices a este vértice
+        for vertice, arestas in self.lista_adjacencia.items():
+            self.lista_adjacencia[vertice] = [
+                aresta for aresta in arestas if aresta.destino.id != vertice_id
+            ]
+
+        # Remove o próprio vértice e sua lista de adjacências
+        del self.lista_adjacencia[vertice_id]
+
+        # Remove o vértice da lista de vértices
+        self.vertices = [
+            vertice for vertice in self.vertices if vertice.id != vertice_id
+        ]
+
+        # Atualiza o ID dos vértices e lista de adjacência
+        for i, vertice in enumerate(self.vertices):
+            vertice.id = i  # Reatribui IDs
+        self.lista_adjacencia = {
+            i: self.lista_adjacencia.get(i, []) for i in range(len(self.vertices))
+        }
+
+    def insereAresta(
+        self,
+        vertice_origem_id: int,
+        vertice_destino_id: int,
+        peso: int = 1,
+        generos_comuns=None,
+    ):
+        """
+        Insere uma aresta entre dois vértices no grafo.
+
+        Args:
+            vertice_origem_id (int): Índice do vértice de origem.
+            vertice_destino_id (int): Índice do vértice de destino.
+            peso (int): Peso da aresta.
+            generos_comuns (list): Gêneros em comum entre os livros.
+        """
+        if generos_comuns is None:
+            generos_comuns = []
+
+        vertice_origem = self.vertices[vertice_origem_id]
+        vertice_destino = self.vertices[vertice_destino_id]
+
+        # Cria uma nova aresta
+        nova_aresta = Aresta(vertice_origem, vertice_destino, peso, generos_comuns)
+
+        # Adiciona a aresta na lista de adjacência (grafo não-direcionado)
+        self.lista_adjacencia[vertice_origem.id].append(nova_aresta)
+        self.lista_adjacencia[vertice_destino.id].append(
+            Aresta(vertice_destino, vertice_origem, peso, generos_comuns)
+        )
+
+    def removeAresta(self, vertice_origem_id: int, vertice_destino_id: int):
+        """
+        Remove uma aresta entre dois vértices.
+
+        Args:
+            vertice_origem_id (int): Índice do vértice de origem.
+            vertice_destino_id (int): Índice do vértice de destino.
+        """
+        # Remove a aresta da lista de adjacência do vértice de origem
+        self.lista_adjacencia[vertice_origem_id] = [
+            aresta
+            for aresta in self.lista_adjacencia[vertice_origem_id]
+            if aresta.destino.id != vertice_destino_id
+        ]
+        # Remove a aresta da lista de adjacência do vértice de destino
+        self.lista_adjacencia[vertice_destino_id] = [
+            aresta
+            for aresta in self.lista_adjacencia[vertice_destino_id]
+            if aresta.destino.id != vertice_origem_id
+        ]
+
+    def tipo_conexidade(self):
+        """
+        Verifica se o grafo é conexo ou desconexo.
+        Um grafo é conexo se todos os vértices estão conectados direta ou indiretamente.
+
+        Returns:
+            str: "Conexo" se o grafo for conexo, "Desconexo" caso contrário.
+        """
+        if not self.vertices:
+            return "O grafo está vazio."
+
+        visitados = set()
+
+        # Função auxiliar para realizar a busca em profundidade (DFS)
+        def dfs(vertice_id):
+            visitados.add(vertice_id)  # Marca o vértice como visitado
+            for aresta in self.lista_adjacencia[vertice_id]:
+                if aresta.destino.id not in visitados:
+                    dfs(aresta.destino.id)
+
+        # Inicia a DFS a partir do primeiro vértice (ID 0)
+        dfs(0)
+
+        # Verifica se todos os vértices foram visitados
+        if len(visitados) == len(self.vertices):
+            print("Conexo")
+        else:
+            print("Desconexo")
 
     def imprimeGrafo(self):
         """
-        EXIBE A MATRIZ DE ADJACÊNCIA DO GRAFO.
+        Imprime a lista de adjacência do grafo, incluindo os nomes dos livros associados a cada vértice.
         """
-
-        if self.grafo:
-            logger.info("A MATRIZ DE ADJACÊNCIA É: ")
-            print(f"\n{'     ':^2}" + f" ".join([f"{i:^2}" for i in range(self.vertices)]))
-            print(f"{'     ':^2}" + f" ".join([f"{'-':^2}" for _ in range(self.vertices)]))
-            for i in range(self.vertices):
-                aux = []
-                for peso in self.grafo[i]:
-                    aux.append(f"{str(peso):^2}")
-                print(f"{i:^2} | {' '.join(aux)}")
+        if not self.lista_adjacencia:
+            print("A lista de adjacência está vazia.")
         else:
-            logger.info("A MATRIZ DE ADJACÊNCIA AINDA NÃO FOI CRIADA! LEIA UM ARQUIVO OU ADICIONE VÉRTICES E ARESTAS!")
-
-
+            print("Lista de Adjacência:")
+            for vertice_id, arestas in self.lista_adjacencia.items():
+                # Obtém o nome do livro associado ao vértice
+                nome_livro = self.vertices[vertice_id].nome_livro
+                arestas_str = ", ".join(
+                    [
+                        f"({aresta.destino.id}, '{self.vertices[aresta.destino.id].nome_livro}', peso={aresta.peso}, gêneros={aresta.generos_comuns})"
+                        for aresta in arestas
+                    ]
+                )
+                print(f"{vertice_id} ('{nome_livro}') -> {arestas_str}")
 
     def imprimeRelacaoVertices(self):
         """
-        EXIBE A MATRIZ DE ADJACÊNCIA DO GRAFO.
+        Exibe a relação dos vértices e os livros que eles representam.
         """
+        print("Relação de Vértices e Livros:")
+        for vertice in self.vertices:
+            print(f"Vértice {vertice.id}: {vertice.nome_livro}")
 
-        logger.info("A MATRIZ DE ADJACÊNCIA É: ")
-        for num, nome in self.livros.items():
-            print(f"{num} --> {nome}")
-
-    def insereAresta(self, vertice_origem: int, vertice_destino: int, peso: int = 1):
+    def leArquivo(self, nome_arquivo: str):
         """
-        INSERE UMA ARESTA ENTRE OS VÉRTICES U E V EM UM GRAFO NÃO-DIRIGIDO.
+        Lê o arquivo de entrada e popula o grafo com vértices e arestas.
 
         Args:
-            vertice_origem (int): O ÍNDICE DO VÉRTICE DE ORIGEM (1-INDEXADO).
-            vertice_destino (int): O ÍNDICE DO VÉRTICE DE DESTINO (1-INDEXADO).
-            peso (int): O PESO DA ARESTA.
+            nome_arquivo (str): O caminho do arquivo de entrada.
         """
+        with open(nome_arquivo, "r", encoding="utf-8") as arquivo:
+            linhas = arquivo.readlines()
 
-        try:
-            # ADICIONA UMA ARESTA ENTRE U E V (NÃO DIRIGIDO)
-            self.grafo[vertice_origem][vertice_destino] = peso
-            self.grafo[vertice_destino][vertice_origem] = peso
-            
-            # INFORMA A INSERÇÃO E MOSTRA A MATRIZ DE ADJACÊNCIA ATUALIZADA
-            logger.info(
-                f"ARESTA INSERIDA ENTRE OS VÉRTICES {vertice_origem} E {vertice_destino} COM PESO {peso}."
+        num_livros = int(
+            linhas[1].strip()
+        )  # A segunda linha contém o número de livros (vértices)
+
+        # Lendo os vértices
+        for i in range(2, 2 + num_livros):
+            partes = linhas[i].split(" ", 1)  # Divide na primeira ocorrência de espaço
+            id_vertice = int(partes[0])  # Número do vértice
+            nome_livro = (
+                partes[1].strip().strip('"')
+            )  # Nome do livro, removendo possíveis aspas
+            self.insereVertice(nome_livro)  # Insere o vértice no grafo
+
+        # Lendo o número de arestas
+        num_arestas = int(linhas[2 + num_livros].strip())
+
+        # Lendo as arestas
+        for i in range(3 + num_livros, 3 + num_livros + num_arestas):
+            partes = linhas[i].split(" ", 3)
+            vertice_origem_id = int(partes[0])  # Primeiro vértice
+            vertice_destino_id = int(partes[1])  # Segundo vértice
+            peso = int(partes[2])  # Peso da aresta
+            generos_comuns = ast.literal_eval(
+                partes[3].strip()
+            )  # Interpreta a lista de gêneros
+
+            # Insere a aresta no grafo
+            self.insereAresta(
+                vertice_origem_id, vertice_destino_id, peso, generos_comuns
             )
-        except Exception:
-            logger.error(
-                f"ERRO AO INSERIR ARESTA ENTRE OS VÉRTICES {vertice_origem} E {vertice_destino}."
-            )
 
-
-    def removeAresta(self, vertice_origem: int, vertice_destino: int):
+    def gravarGrafo(self, nome_arquivo: str):
         """
-        REMOVE A ARESTA ENTRE OS VÉRTICES U E V EM UM GRAFO NÃO-DIRIGIDO E EXIBE A MATRIZ RESULTANTE.
+        Grava o conteúdo do grafo em um arquivo no formato:
+        - Tipo do grafo
+        - Número de vértices (livros)
+        - Listagem de vértices (ID e nome do livro)
+        - Número de arestas
+        - Arestas no formato: vertice_origem vertice_destino peso [gêneros]
 
         Args:
-            vertice_origem (int): O ÍNDICE DO VÉRTICE DE ORIGEM (1-INDEXADO).
-            vertice_destino (int): O ÍNDICE DO VÉRTICE DE DESTINO (1-INDEXADO).
+            nome_arquivo (str): O caminho do arquivo de saída.
         """
+        with open(nome_arquivo, "w", encoding="utf-8") as arquivo:
+            # Escreve o tipo do grafo (por exemplo, 2 para grafo não-direcionado)
+            arquivo.write("2\n")
 
-        # REMOVE A ARESTA ENTRE U E V (NÃO DIRIGIDO)
-        self.grafo[vertice_origem][vertice_destino] = 0
-        self.grafo[vertice_destino][vertice_origem] = 0
+            # Escreve o número de vértices
+            arquivo.write(f"{len(self.vertices)}\n")
 
-        # INFORMA A REMOÇÃO E MOSTRA A MATRIZ DE ADJACÊNCIA ATUALIZADA
-        logger.info(
-            f"ARESTA REMOVIDA ENTRE OS VÉRTICES {vertice_origem} E {vertice_destino}."
-        )
+            # Escreve os vértices com o formato: ID "nome do livro"
+            for vertice in self.vertices:
+                arquivo.write(f'{vertice.id} "{vertice.nome_livro}"\n')
 
-    def insereVertice(self):
-        """
-        INSERE UM NOVO VÉRTICE NO GRAFO.
-        """
+            # Escreve o número de arestas
+            total_arestas = (
+                sum(len(arestas) for arestas in self.lista_adjacencia.values()) // 2
+            )  # Como é grafo não-direcionado, cada aresta é contada duas vezes
+            arquivo.write(f"{total_arestas}\n")
 
-        self.vertices += 1
-
-        # ADICIONA UMA NOVA LINHA E COLUNA COM 0 PARA A NOVA MATRIZ DE ADJACÊNCIA
-        self.grafo.append([0] * self.vertices)
-        for i in range(self.vertices-1):
-            self.grafo[i].append(0)
-
-        self.imprimeGrafo()
-        logger.info(f"VÉRTICE {self.vertices-1} INSERIDO COM SUCESSO.")
-
-    def removeVertice(self, vertice: int):
-        """
-        REMOVE UM VÉRTICE DE UM GRAFO NÃO-DIRECIONADO E TODAS AS ARESTAS ASSOCIADAS.
-
-        Args:
-            vertice (int): O ÍNDICE DO VÉRTICE A SER REMOVIDO (1-INDEXADO).
-        """
-
-        # REMOVE A LINHA DO VÉRTICE
-        self.grafo.pop(vertice)
-
-        # REMOVE A COLUNA DO VÉRTICE EM CADA LINHA RESTANTE
-        for i in range(len(self.grafo)):
-            self.grafo[i].pop(vertice)
-
-        # ATUALIZAR O NÚMERO DE VÉRTICES
-        self.vertices -= 1
-
-        # INFORMA A REMOÇÃO E MOSTRA A MATRIZ DE ADJACÊNCIA ATUALIZADA
-        logger.success(
-            f"VÉRTICE {vertice} E TODAS AS ARESTAS ASSOCIADAS FORAM REMOVIDAS."
-        )
-
-    def leArquivo(self, arquivo: str):
-        """
-        CARREGA O GRAFO A PARTIR DE UM ARQUIVO TXT E SALVA OS NOMES DOS LIVROS.
-
-        Args:
-            arquivo (str): O CAMINHO DO ARQUIVO TXT QUE CONTÉM OS DADOS DO GRAFO.
-        """
-        try:
-            with open(arquivo, "r") as f:
-                linhas = f.readlines()
-
-            self.vertices = int(linhas[1].strip())
-            self.grafo = [[0] * self.vertices for _ in range(self.vertices)]
-
-            for linha in linhas[2 : self.vertices + 2]:
-                dados = linha.strip().split(' "')
-                if len(dados) >= 2:
-                    vertice = int(dados[0])
-                    nome_livro = dados[1]
-                    self.livros[vertice] = nome_livro
-
-            for linha in linhas[self.vertices + 3 :]:
-                dados = linha.strip().split(" ")
-                vertice_origem, vertice_destino, peso = (
-                    int(dados[0]),
-                    int(dados[1]),
-                    int(dados[2]),
-                )
-                self.insereAresta(vertice_origem, vertice_destino, peso)
-
-            logger.success("GRAFO CARREGADO COM SUCESSO A PARTIR DO ARQUIVO.")
-
-            self.imprimeGrafo()
-
-        except FileNotFoundError:
-            logger.error(f"O arquivo {arquivo} não foi encontrado.")
-        except Exception as e:
-            logger.error(f"Ocorreu um erro ao carregar o grafo: {e}")
+            # Escreve as arestas no formato: vertice_origem vertice_destino peso [gêneros]
+            arestas_gravadas = (
+                set()
+            )  # Conjunto para evitar duplicidade (grafo não-direcionado)
+            for vertice_origem_id, arestas in self.lista_adjacencia.items():
+                for aresta in arestas:
+                    # Para evitar duplicidade, gravamos a aresta apenas uma vez
+                    if (
+                        aresta.origem.id,
+                        aresta.destino.id,
+                    ) not in arestas_gravadas and (
+                        aresta.destino.id,
+                        aresta.origem.id,
+                    ) not in arestas_gravadas:
+                        # Adiciona a aresta ao conjunto para garantir que não seja repetida
+                        arestas_gravadas.add((aresta.origem.id, aresta.destino.id))
+                        # Escreve no arquivo
+                        arquivo.write(
+                            f"{aresta.origem.id} {aresta.destino.id} {aresta.peso} {aresta.generos_comuns}\n"
+                        )
 
     def exibirGrafoVisual(self):
         """
-        EXIBE O CONTEÚDO ATUAL DO GRAFO DE FORMA VISUALMENTE COMPREENSÍVEL E ATRAENTE.
+        Exibe o conteúdo atual do grafo de forma visualmente compreensível e atraente.
         """
-
         print("===============================================================")
         print(f"Tipo do Grafo: Não Orientado com peso nas arestas")
-        print(f"Número de Vértices: {self.vertices}")
+        print(f"Número de Vértices: {len(self.vertices)}")
         print("---------------------------------------------------------------")
 
         print("Vértices e seus respectivos nomes:")
-        for vertice, nome_livro in self.livros.items():
-            print(f"- Vértice {vertice}: {nome_livro.replace('"', "")}")
+        for vertice in self.vertices:
+            print(f"- Vértice {vertice.id}: {vertice.nome_livro}")
 
         print("---------------------------------------------------------------")
-        print("\nArestas (conexões entre os vértices) e seus respectivos pesos:")
-        arestas = []
-        for i in range(self.vertices-1):
-            for j in range(i + 1, self.vertices-1):  # Para não repetir arestas
-                if self.grafo[i][j] != 0:
-                    arestas.append((i + 1, j + 1, self.grafo[i][j]))
+        print(
+            "\nArestas (conexões entre os vértices) e seus respectivos pesos e gêneros comuns:"
+        )
+
+        arestas_exibidas = set()  # Conjunto para evitar duplicidade de arestas
+
+        for vertice_origem_id, arestas in self.lista_adjacencia.items():
+            for aresta in arestas:
+                # Para evitar duplicação de arestas em grafos não-direcionados
+                if (aresta.origem.id, aresta.destino.id) not in arestas_exibidas and (
+                    aresta.destino.id,
+                    aresta.origem.id,
+                ) not in arestas_exibidas:
+                    arestas_exibidas.add((aresta.origem.id, aresta.destino.id))
+                    generos = (
+                        ", ".join(aresta.generos_comuns)
+                        if aresta.generos_comuns
+                        else "Nenhum"
+                    )
                     print(
-                        f"- {self.livros[i + 1]} - {self.livros[j]} ---> Com peso: {j + 1}"
+                        f"- {aresta.origem.nome_livro} ({aresta.origem.id}) <--> {aresta.destino.nome_livro} ({aresta.destino.id}) | Peso: {aresta.peso} | Gêneros em comum: {generos}"
                     )
 
-        if not arestas:
+        if not arestas_exibidas:
             print("Não há arestas neste grafo.")
 
         print("===============================================================")
 
-    def gravarGrafo(self, arquivo: str):
+    def grau_vertices(self):
         """
-        GRAVA O GRAFO EM UM ARQUIVO TXT NO FORMATO ESPECIFICADO.
-
-        Args:
-            arquivo (str): O CAMINHO DO ARQUIVO TXT A SER GRAVADO.
+        Calcula e imprime o grau de cada vértice do grafo.
         """
-        try:
-            with open(arquivo, 'w') as f:
-                f.write(f"2\n")
-                f.write(f"{self.vertices}\n")
+        for vertice in self.vertices:
+            grau = len(self.lista_adjacencia[vertice.id])
+            print(f"Vértice {vertice.id} ('{vertice.nome_livro}'): grau = {grau}")
 
-                for vertice, nome_livro in self.livros.items():
-                    f.write(f'{vertice} "{nome_livro.replace('"', "")}"\n')
-
-                num_arestas = 0
-                arestas = []
-                for i in range(self.vertices):
-                    for j in range(i + 1, self.vertices):
-                        if self.grafo[i][j] != 0:
-                            num_arestas += 1
-                            arestas.append(f"{i} {j} {self.grafo[i][j]}\n")
-
-                f.write(f"{num_arestas}\n")
-
-                for aresta in arestas:
-                    f.write(aresta)
-
-            logger.info(f"GRAFO GRAVADO COM SUCESSO NO ARQUIVO {arquivo}.")
-        except Exception as e:
-            logger.error(f"Ocorreu um erro ao gravar o grafo: {e}")
-
-    def tipo_conexidade(self) -> int:
+    def eh_grafo_euleriano(self):
         """
-
-        VERIFICA O TIPO DE CONEXIDADE DE UM GRAFO NÃO DIRECIONADO.
-
-        Returns:
-            int: RETORNA 0 SE O GRAFO É CONEXO E 1 SE O GRAFO É DESCONEXO.
+        Verifica se o grafo é Euleriano ou se admite um percurso Euleriano.
         """
+        graus_impares = sum(
+            1
+            for vertice in self.vertices
+            if len(self.lista_adjacencia[vertice.id]) % 2 != 0
+        )
 
-        # LISTA PARA MARCAR OS VÉRTICES VISITADOS
-        visitados = [False] * self.vertices
-
-        def busca_profundidade(v: int):
-            """
-            REALIZA A BUSCA EM PROFUNDIDADE (DFS) A PARTIR DE UM VÉRTICE.
-
-            Args:
-                v (int): O ÍNDICE DO VÉRTICE DE PARTIDA PARA A BUSCA EM PROFUNDIDADE.
-            """
-            visitados[v] = True  # MARCA O VÉRTICE ATUAL COMO VISITADO
-            # PERCORRE OS VÉRTICES VIZINHOS DO VÉRTICE ATUAL
-            for i in range(self.vertices):
-                # SE HÁ UMA ARESTA E O VÉRTICE AINDA NÃO FOI VISITADO, CONTINUA A BUSCA
-                if self.grafo[v][i] == 1 and not visitados[i]:
-                    busca_profundidade(i)  # CHAMA A FUNÇÃO RECURSIVAMENTE PARA O VIZINHO
-
-        # INICIA A BUSCA EM PROFUNDIDADE A PARTIR DO VÉRTICE 0
-        busca_profundidade(0)
-
-        # VERIFICA SE TODOS OS VÉRTICES FORAM VISITADOS
-        if all(visitados):
-            logger.info("GRAFO É CONEXO")  # MENSAGEM DE QUE O GRAFO É CONEXO
-            return 0  # O GRAFO É CONEXO
+        if graus_impares == 0:
+            print("O grafo é Euleriano.")
+        elif graus_impares == 2:
+            print("O grafo admite um percurso Euleriano.")
         else:
-            logger.info("GRAFO É DESCONEXO")  # MENSAGEM DE QUE O GRAFO É DESCONEXO
-            return 1  # O GRAFO É DESCONEXO
+            print("O grafo não é Euleriano e não admite percurso Euleriano.")
 
-    def bfs(self, vertice_inicial: int, visitado: list) -> set:
+    def pode_adicionar(self, caminho, vertice_id):
         """
-        REALIZA UMA BUSCA EM LARGURA (BFS) A PARTIR DE UM VÉRTICE INICIAL.
-        RETORNA O CONJUNTO DE VÉRTICES QUE PERTENCEM À MESMA COMPONENTE CONECTADA.
+        Verifica se o vértice pode ser adicionado ao caminho.
 
         Args:
-            vertice_inicial (int): O VÉRTICE DE PARTIDA PARA A BUSCA EM LARGURA.
-            visitado (list): LISTA QUE CONTROLA OS VÉRTICES VISITADOS.
+            caminho (list): O caminho atual.
+            vertice_id (int): O ID do vértice a ser adicionado.
 
         Returns:
-            set: CONJUNTO DE VÉRTICES DA COMPONENTE CONECTADA.
+            bool: True se o vértice pode ser adicionado, False caso contrário.
         """
-        fila = deque([vertice_inicial])  # INICIA A FILA COM O VÉRTICE INICIAL
-        visitado[vertice_inicial] = True  # MARCA O VÉRTICE INICIAL COMO VISITADO
-        componente = {vertice_inicial}  # INICIALIZA O CONJUNTO DA COMPONENTE
+        # Se o vértice já está no caminho, não pode ser adicionado
+        if vertice_id in caminho:
+            return False
 
-        while fila:  # ENQUANTO HOUVER VÉRTICES NA FILA
-            v = fila.popleft()  # REMOVE O VÉRTICE DO INÍCIO DA FILA
+        # Se não é o primeiro vértice, deve haver uma aresta entre o último vértice no caminho e o novo vértice
+        if caminho[-1] != -1:  # Verifica se já temos algum vértice no caminho
+            ultimo_vertice_id = caminho[-1]
+            arestas = self.lista_adjacencia[ultimo_vertice_id]
+            for aresta in arestas:
+                if aresta.destino.id == vertice_id:
+                    return True
+            return False  # Se não há aresta, não pode adicionar
 
-            for i in range(self.vertices):
-                if self.grafo[v][i] != 0 and not visitado[i]:  # SE HÁ UMA ARESTA E O VIZINHO NÃO FOI VISITADO
-                    fila.append(i)  # ADICIONA O VIZINHO À FILA
-                    visitado[i] = True  # MARCA O VIZINHO COMO VISITADO
-                    componente.add(i)  # ADICIONA O VIZINHO À COMPONENTE
+        return True  # Se for o primeiro vértice, sempre pode adicionar
 
-        return componente  # RETORNA O CONJUNTO DE VÉRTICES DA COMPONENTE
+    def hamiltoniano_util(self, caminho, pos):
+        # Se todos os vértices estão no caminho e há uma aresta de volta ao início
+        if pos == len(self.vertices):
+            # Verifica se existe uma aresta do último vértice no caminho de volta ao primeiro
+            ultimo_vertice_id = caminho[pos - 1]
+            return any(
+                aresta.destino.id == caminho[0]
+                for aresta in self.lista_adjacencia[ultimo_vertice_id]
+            )
 
-    def componentesConectadas(self) -> list:
+        for vertice_id in range(len(self.vertices)):
+            # Adicione lógica para verificar se o vértice pode ser adicionado ao caminho
+            if self.pode_adicionar(caminho, vertice_id):
+                caminho[pos] = vertice_id
+
+                if self.hamiltoniano_util(caminho, pos + 1):
+                    return True
+
+                # Backtrack
+                caminho[pos] = -1
+
+        return False
+
+    def eh_grafo_hamiltoniano(self):
         """
-        ENCONTRA TODAS AS COMPONENTES CONECTADAS DO GRAFO.
-        RETORNA UMA LISTA DE CONJUNTOS, ONDE CADA CONJUNTO REPRESENTA UMA COMPONENTE CONECTADA.
-
-        Returns:
-            list: LISTA DE COMPONENTES CONECTADAS.
+        Verifica se o grafo admite um ciclo Hamiltoniano.
         """
-        visitado = [False] * self.vertices  # INICIALIZA A LISTA DE VISITADOS
-        componentes = []  # LISTA PARA ARMAZENAR AS COMPONENTES ENCONTRADAS
+        caminho = [-1] * len(self.vertices)
+        caminho[0] = 0  # Começa do primeiro vértice
 
-        for v in range(self.vertices):
-            if not visitado[v]:  # SE O VÉRTICE AINDA NÃO FOI VISITADO
-                componente = self.bfs(v, visitado)  # REALIZA A BUSCA EM LARGURA
-                componentes.append(componente)  # ADICIONA A COMPONENTE À LISTA
+        if not self.hamiltoniano_util(caminho, 1):
+            print("O grafo não admite um ciclo Hamiltoniano.")
+        else:
+            print("O grafo admite um ciclo Hamiltoniano.")
 
-        return componentes  # RETORNA A LISTA DE COMPONENTES CONECTADAS
-
-
-    def grafo_reduzido(self):
+    def colorir_grafo(self):
         """
-        GERA O GRAFO REDUZIDO COM BASE NAS COMPONENTES CONECTADAS DO GRAFO ORIGINAL.
-        O GRAFO REDUZIDO CONTÉM UM VÉRTICE PARA CADA COMPONENTE CONECTADA, E UMA ARESTA
-        ENTRE DUAS COMPONENTES SE HOUVER PELO MENOS UMA ARESTA CONECTANDO DOIS VÉRTICES DE COMPONENTES DISTINTAS NO GRAFO ORIGINAL.
+        Realiza a coloração do grafo.
         """
-        
-        # ENCONTRA TODAS AS COMPONENTES CONECTADAS
-        componentes = self.componentesConectadas()
-        num_componentes = len(componentes)
+        cor = [-1] * len(self.vertices)
+        cor[0] = 0  # A primeira cor é a 0
 
-        # CRIA A MATRIZ DE ADJACÊNCIA DO GRAFO REDUZIDO
-        grafo_reduzido = [[0] * num_componentes for _ in range(num_componentes)]
+        for vertice_id in range(1, len(self.vertices)):
+            # Obtenha as cores usadas pelos vizinhos
+            vizinhos = [
+                self.lista_adjacencia[vertice_id][i].destino.id
+                for i in range(len(self.lista_adjacencia[vertice_id]))
+            ]
+            cores_usadas = set(
+                cor[vizinho] for vizinho in vizinhos if cor[vizinho] != -1
+            )
 
-        # MAPEAMENTO DOS VÉRTICES PARA SEUS COMPONENTES CONECTADOS
-        vertice_para_componente = {}
-        for idx, componente in enumerate(componentes):
-            for vertice in componente:
-                vertice_para_componente[vertice] = idx
+            # Atribua a menor cor disponível ao vértice
+            for c in range(len(self.vertices)):
+                if c not in cores_usadas:
+                    cor[vertice_id] = c
+                    break
 
-        # CONECTA AS COMPONENTES NO GRAFO REDUZIDO
-        for v1 in range(self.vertices):
-            for v2 in range(v1 + 1, self.vertices):
-                if self.grafo[v1][v2] != 0:  # VERIFICA SE EXISTE UMA ARESTA ENTRE v1 E v2
-                    comp_v1 = vertice_para_componente[v1]  # OBTÉM A COMPONENTE DE v1
-                    comp_v2 = vertice_para_componente[v2]  # OBTÉM A COMPONENTE DE v2
-                    if comp_v1 != comp_v2:  # SE AS COMPONENTES FOREM DIFERENTES
-                        # ARESTA ENTRE COMPONENTES DIFERENTES NO GRAFO ORIGINAL -> ARESTA NO GRAFO REDUZIDO
-                        grafo_reduzido[comp_v1][comp_v2] = 1
-                        grafo_reduzido[comp_v2][comp_v1] = 1
+        # Imprime as cores atribuídas
+        for vertice_id, c in enumerate(cor):
+            print(
+                f"Vértice {vertice_id} ('{self.vertices[vertice_id].nome_livro}') tem cor {c}."
+            )
 
-        # EXIBE O GRAFO REDUZIDO
-        logger.info("GRAFO REDUZIDO:")
-        for linha in grafo_reduzido:
-            print(linha)
+    def renderizar_grafo(self, filename="grafo.html"):
+        """
+        Renderiza o grafo utilizando PyVis e salva em um arquivo HTML.
 
-        return grafo_reduzido  # RETORNA A MATRIZ DE ADJACÊNCIA DO GRAFO REDUZIDO
+        Args:
+            filename (str): O nome do arquivo onde o grafo será salvo.
+        """
+        # Cria um objeto Network do PyVis
+        net = Network(notebook=True, height="750px", width="100%", directed=False)
 
+        # Adiciona os vértices
+        for vertice in self.vertices:
+            net.add_node(vertice.id, label=vertice.nome_livro)
+
+        # Adiciona as arestas
+        for _, arestas in self.lista_adjacencia.items():
+            for aresta in arestas:
+                net.add_edge(
+                    aresta.origem.id,
+                    aresta.destino.id,
+                    title=f"{aresta.peso} - {', '.join(aresta.generos_comuns)}",
+                )
+
+        # Renderiza o grafo e salva como um arquivo HTML
+        net.show(filename)
+
+
+# Exemplo de uso
+if __name__ == "__main__":
+    grafo = TGrafoND()
+
+    grafo.leArquivo("app/data/grafo_raw_1.txt")

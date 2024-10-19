@@ -1,0 +1,58 @@
+2
+10
+0 "Dracula"
+1 "Fourth Wing"
+2 "Romeo and Juliet"
+3 "1984 (adaptation)"
+4 "The Hunger Games"
+5 "Circe"
+6 "Frankenstein or The Modern Prometheus"
+7 "Lolita"
+8 "Pride and Prejudice"
+9 "Alice's Adventures in Wonderland"
+90
+0 2 14 ['Etc.', 'British And Irish Drama (Dramatic Works By One Author)', 'English Literature', 'General', 'Cartoons And Comics', '18.05 English Literature', 'Comics & Graphic Novels', 'Literature', 'Literary', 'Drama', 'Fiction', 'Study And Teaching', 'Adaptations', 'History And Criticism']
+0 8 18 ['England', 'English Literature', 'General', 'Nouvelles', 'Juvenile Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'Large Type Books', 'Historical', 'Romans', 'Novela', 'English Language', 'Drama', 'Fiction', 'Study And Teaching', "Children'S Fiction", 'Adaptations', 'History And Criticism']
+0 6 36 ['Count (Fictitious Character)', 'Science Fiction', 'Juvenile Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'English Horror Tales', 'Horror Fiction', 'Horror Stories', 'English Language', 'Classics', 'English Literature', 'Cartoons And Comics', 'Literature', 'Dracula', 'Historical', 'Ghost', 'Fiction', "Children'S Fiction", 'History And Criticism', 'Etc.', "Children'S Stories", 'Monsters', 'General', 'Large Type Books', 'Literary', 'Horror', 'Gothic', 'Comic Books', 'Nouvelles', 'Comics & Graphic Novels', 'Strips', 'Literary Criticism', 'Horror Tales', 'Romans', 'Novela', 'Rhetoric']
+0 9 20 ['Science Fiction', 'Juvenile Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'English Language', 'Classics', 'English Literature', 'Literature', 'Fiction', "Children'S Fiction", 'History And Criticism', "Children'S Stories", 'General', 'Large Type Books', 'Fantasy', 'Legends', 'Nouvelles', 'Readers For New Literates', 'Romans', 'Novela']
+0 7 7 ['General', 'Nouvelles', 'Large Type Books', 'Romans', 'Novela', 'Drama', 'Fiction']
+0 3 7 ['Science Fiction', 'General', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'Readers For New Literates', 'English Language', 'Fiction']
+0 4 10 ['Science Fiction', 'Action & Adventure', 'Nouvelles', 'Juvenile Fiction', 'Large Type Books', 'Romans', 'Novela', 'Fiction', 'Study And Teaching', "Children'S Fiction"]
+0 5 5 ['General', 'Historical', 'Literary', 'Fantasy', 'Fiction']
+0 1 2 ['Fantasy', 'Fiction']
+1 2 1 ['Fiction']
+1 8 2 ['Romance', 'Fiction']
+1 6 2 ['Fiction', 'Ficción']
+1 9 3 ['Fantasy', 'Fiction', 'Fantasía']
+1 7 3 ['Romance', 'Fiction', 'Ficción']
+1 3 1 ['Fiction']
+1 4 2 ['Fiction', 'Young Adult Fiction']
+1 5 2 ['Fantasy', 'Fiction']
+2 8 17 ['Courtship', 'Reading Level-Grade 10', 'Classical Literature', 'Families', 'English Literature', 'General', 'Reading Level-Grade 11', 'Reading Level-Grade 9', 'Drama (Dramatic Works By One Author)', 'History And Criticism', 'Drama', 'Reading Level-Grade 12', 'Man-Woman Relationships', 'Fiction', 'Study And Teaching', 'Adaptations', 'History']
+2 6 16 ['Etc.', 'English Literature', 'Cartoons And Comics', 'General', 'Study Guides', 'Juvenile Literature', 'Comics & Graphic Novels', 'Literature', 'Criticism And Interpretation', 'Drama (Dramatic Works By One Author)', 'Examinations', 'Literary', 'History And Criticism', 'Man-Woman Relationships', 'Fiction', 'History']
+2 9 11 ['English Literature', 'General', 'Juvenile Literature', 'Spanish Language', 'Literature', 'Criticism And Interpretation', 'Collections', 'History And Criticism', 'Fiction', 'Literatura Inglesa', 'History']
+2 7 5 ['General', 'Love', 'Drama', 'Man-Woman Relationships', 'Fiction']
+2 3 3 ['Juvenile Literature', 'Fiction', 'General']
+2 4 6 ['Reading Level-Grade 10', 'Reading Level-Grade 9', 'Reading Level-Grade 11', 'Reading Level-Grade 12', 'Fiction', 'Study And Teaching']
+2 5 3 ['Fiction', 'General', 'Literary']
+3 8 6 ['Readers', 'General', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'English Language', 'Fiction']
+3 6 8 ['Readers', 'Science Fiction', 'General', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'English Language', 'Juvenile Literature', 'Fiction']
+3 9 10 ['Readers', 'Science Fiction', 'General', 'Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'Readers For New Literates', 'English Language', 'Juvenile Literature', 'High Interest-Low Vocabulary Books']
+3 7 2 ['Fiction', 'General']
+3 4 3 ['Dystopias', 'Fiction', 'Science Fiction']
+3 5 2 ['Fiction', 'General']
+4 8 17 ['Reading Level-Grade 8', 'Reading Level-Grade 10', 'Interpersonal Relations', 'Reading Level-Grade 9', 'Nouvelles', 'Juvenile Fiction', 'Roman', 'Large Type Books', 'Romans', 'Novela', 'Reading Level-Grade 11', 'Reading Level-Grade 12', 'Young Women', 'Fiction', 'Study And Teaching', 'Sisters', "Children'S Fiction"]
+4 6 11 ['Science Fiction', 'Literature And Fiction', 'Nouvelles', 'Juvenile Fiction', 'Juvenile', 'Large Type Books', 'Novels', 'Romans', 'Novela', 'Fiction', "Children'S Fiction"]
+4 9 14 ['Science Fiction', 'New York Times Bestseller', 'Novela Juvenil', 'Nouvelles', 'Juvenile Fiction', 'Large Type Books', 'Fantasy Fiction', 'Etc. Pour La Jeunesse', 'Romans', 'Novela', 'Spanish Language Materials', 'Fiction', "Children'S Fiction", 'Books And Reading']
+4 7 7 ['Nouvelles', 'Large Type Books', 'Long Now Manual For Civilization', 'Romans', 'Novela', 'Young Women', 'Fiction']
+4 5 2 ['Fiction', 'New York Times Bestseller']
+5 8 4 ['Historical', 'Historical Fiction', 'Fiction', 'General']
+5 6 4 ['Historical', 'Fiction', 'General', 'Literary']
+5 9 5 ['New York Times Bestseller', 'General', 'Fantasy', 'Fiction', 'Animals']
+5 7 2 ['Fiction', 'General']
+6 8 19 ['Juvenile Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'English Language', 'Readers', 'English Literature', 'Historical', 'Fiction', "Children'S Fiction", 'History And Criticism', 'General', 'English Fiction', 'Large Type Books', 'History', 'Nouvelles', 'Drama (Dramatic Works By One Author)', 'Romans', 'Novela', 'Man-Woman Relationships']
+6 9 24 ['Science Fiction', 'Juvenile Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'English Language', 'Classics', 'English', 'Readers', 'English Literature', 'Literature', 'Reading Materials', 'Fiction', "Children'S Fiction", 'History And Criticism', "Children'S Stories", 'General', 'English Fiction', 'Large Type Books', 'History', 'Nouvelles', 'Criticism And Interpretation', 'Romans', 'Novela', 'Juvenile Literature']
+6 7 9 ['General', 'Nouvelles', 'Classic Fiction', 'Large Type Books', 'Romans', 'Novela', 'Man-Woman Relationships', 'Fiction', 'Ficción']
+7 8 13 ['Romance', 'Literary Fiction', 'General', 'Romance Fiction', 'Man-Woman Relationships', 'Nouvelles', 'Large Type Books', 'Love Stories', 'Romans', 'Novela', 'Drama', 'Young Women', 'Fiction']
+7 9 7 ['General', 'Nouvelles', 'Large Type Books', 'Romans', 'Novela', 'Girls', 'Fiction']
+8 9 17 ['Readers', 'English Literature', 'General', 'English Fiction', 'Nouvelles', 'Juvenile Fiction', 'Textbooks For Foreign Speakers', 'British And Irish Fiction (Fictional Works By One Author)', 'Coloring Books', 'Large Type Books', 'Romans', 'Novela', 'English Language', 'History And Criticism', 'Fiction', "Children'S Fiction", 'History']

@@ -20,8 +20,9 @@ for _, row in df.iterrows():
     v1_idx = vertices_dict[row["Livro 1"]]
     v2_idx = vertices_dict[row["Livro 2"]]
     peso = row["Peso"]
-    grafo_lines.append(f"{v1_idx} {v2_idx} {peso}\n")
+    genero = row["Gêneros"].split(", ")
+    grafo_lines.append(f"{v1_idx} {v2_idx} {peso} {genero}\n")
 
-grafo_file_path = "app/aux_data/grafo_txt_from_excel.txt"
+grafo_file_path = "app/data/input/grafo.txt"
 with open(grafo_file_path, "w") as file:
     file.writelines(grafo_lines)

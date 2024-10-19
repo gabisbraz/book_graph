@@ -7,11 +7,24 @@ Membros do Grupo:
 3. Maria Julia de Pádua - 10400630
 
 Síntese do Conteúdo:
-Este código implementa uma aplicação que permite a interação com um grafo 
-representando livros, onde os vértices são os livros e as arestas 
-representam a similaridade entre eles. O usuário pode realizar diversas 
-operações, como ler e gravar dados, inserir e remover vértices e arestas, 
-além de visualizar o grafo e suas características.
+O menu interativo da aplicação é projetado para facilitar a interação do usuário com as 
+funcionalidades disponíveis para gerenciar o grafo. Ele apresenta uma lista de opções 
+numeradas, permitindo que o usuário selecione a operação desejada de forma intuitiva. 
+As opções incluem a adição e remoção de vértices, que possibilitam ao usuário incluir 
+ou excluir livros do grafo. Também há a possibilidade de adicionar e remover arestas, 
+permitindo a criação ou a eliminação de relações entre os livros.
+
+Além disso, o menu oferece opções para visualizar a lista de adjacência do grafo, 
+proporcionando uma representação clara das conexões entre os livros. O usuário pode 
+também acessar funções para carregar dados a partir de um arquivo, facilitando a 
+importação de informações, e salvar a estrutura do grafo em um arquivo para registro 
+ou análise posterior. Outra funcionalidade disponível no menu é a geração de um gráfico 
+visual do grafo, utilizando a biblioteca PyVis, o que permite uma visualização mais 
+intuitiva das relações entre os livros.
+
+O menu é projetado para ser interativo e responsivo, com a opção de sair da aplicação 
+a qualquer momento. Essa abordagem interativa garante que o usuário possa navegar 
+facilmente entre as opções e realizar as operações desejadas de maneira eficiente.
 
 """
 
@@ -23,7 +36,8 @@ from pathlib import Path
 from loguru import logger
 
 DIR_ROOT = str(Path(__file__).parents[1])
-sys.path.append(DIR_ROOT)
+if DIR_ROOT not in sys.path:
+    sys.path.append(DIR_ROOT)
 
 try:
     from app.utils.classes.grafo_nd import TGrafoND
@@ -57,8 +71,12 @@ Escolha uma das opções abaixo:
 7) Mostrar conteúdo do arquivo
 8) Mostrar grafo
 9) Apresentar a conexidade
-10) Apresentar o grafo reduzido
-11) Sair\n"""
+10) Calcular grau dos vértices
+11) Verificar se o grafo é Euleriano
+12) Verificar se o grafo admite ciclo Hamiltoniano
+13) Colorir grafo
+14) Renderizar grafo visual
+15) Sair\n"""
         )
 
         # RECEBE A OPÇÃO ESCOLHIDA PELO USUÁRIO
@@ -66,15 +84,16 @@ Escolha uma das opções abaixo:
 
         # LER DADOS DO ARQUIVO
         if opcao == "1":
-            graph_object.leArquivo(arquivo="app/data/grafo_raw_2.txt")
+            graph_object.leArquivo(nome_arquivo="app/data/input/grafo.txt")
 
         # GRAVAR DADOS NO ARQUIVO
         elif opcao == "2":
-            graph_object.gravarGrafo(arquivo="app/data/grafo.txt")
+            graph_object.gravarGrafo(nome_arquivo="app/data/output/grafo.txt")
 
         # INSERIR UM VÉRTICE
         elif opcao == "3":
-            graph_object.insereVertice()
+            livro = input("INSIRA O NOME DO LIVRO: ")
+            graph_object.insereVertice(nome_livro=livro)
 
         # INSERIR UMA ARESTA
         elif opcao == "4":
@@ -83,10 +102,16 @@ Escolha uma das opções abaixo:
                 v1 = int(input("INSIRA O VÉRTICE 1: "))
                 v2 = int(input("INSIRA O VÉRTICE 2: "))
                 peso = int(input("INSIRA O PESO DA ARESTA: "))
+                generos = input(
+                    "INSIRA OS GÊNEROS EM COMUM (separados por ';'): "
+                ).split(";")
 
                 # CHAMA A FUNÇÃO PARA INSERIR A ARESTA COM OS PARÂMETROS RECEBIDOS
                 graph_object.insereAresta(
-                    vertice_destino=v1, vertice_origem=v2, peso=peso
+                    vertice_origem_id=v1,
+                    vertice_destino_id=v2,
+                    peso=peso,
+                    generos_comuns=generos,
                 )
                 sleep(2)
                 graph_object.imprimeGrafo()  # IMPRIME O GRAFO ATUALIZADO
@@ -103,7 +128,7 @@ Escolha uma das opções abaixo:
                 v = int(input("INSIRA O NÚMERO DO VÉRTICE A SER REMOVIDO: "))
 
                 # REMOVE O VÉRTICE SELECIONADO
-                graph_object.removeVertice(vertice=v)
+                graph_object.removeVertice(vertice_id=v)
                 sleep(2)
                 graph_object.imprimeGrafo()  # IMPRIME O GRAFO ATUALIZADO
             except Exception:
@@ -117,7 +142,9 @@ Escolha uma das opções abaixo:
                 v1 = int(input("INSIRA O VÉRTICE 1: "))
                 v2 = int(input("INSIRA O VÉRTICE 2: "))
                 # CHAMA A FUNÇÃO PARA REMOVER A ARESTA
-                graph_object.removeAresta(vertice_destino=v1, vertice_origem=v2)
+                graph_object.removeAresta(vertice_origem_id=v1, vertice_destino_id=v2)
+                sleep(2)
+                graph_object.imprimeGrafo()  # IMPRIME O GRAFO ATUALIZADO
             except Exception:
                 logger.info("INPUT FORNECIDO INVÁLIDO, TENTE NOVAMENTE!")
                 continue  # VOLTA AO MENU PRINCIPAL
@@ -134,12 +161,28 @@ Escolha uma das opções abaixo:
         elif opcao == "9":
             graph_object.tipo_conexidade()
 
-        # APRESENTAR O GRAFO REDUZIDO
+        # CALCULAR O GRAU DOS VÉRTICES
         elif opcao == "10":
-            graph_object.grafo_reduzido()
+            graph_object.grau_vertices()
+
+        # VERIFICAR SE O GRAFO É EULERIANO
+        elif opcao == "11":
+            graph_object.eh_grafo_euleriano()
+
+        # VERIFICAR SE O GRAFO ADMITE CICLO HAMILTONIANO
+        elif opcao == "12":
+            graph_object.eh_grafo_hamiltoniano()
+
+        # COLORIR O GRAFO
+        elif opcao == "13":
+            graph_object.colorir_grafo()
+
+        # RENDERIZAR O GRAFO VISUAL
+        elif opcao == "14":
+            graph_object.renderizar_grafo()
 
         # SAIR DO PROGRAMA
-        elif opcao == "11":
+        elif opcao == "15":
             logger.info("Saindo...")
             break
 
