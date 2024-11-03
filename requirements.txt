@@ -1,2 +1,5 @@
 loguru
 pyvis
+openpxyl
+pandas
+request

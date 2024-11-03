@@ -6,48 +6,44 @@ from loguru import logger
 def get_livro(titulo):
     titulo_formatado = titulo.replace(" ", "+")
 
-    url = f"https://openlibrary.org/search.json?title={titulo_formatado}"
+    url = f"https://www.googleapis.com/books/v1/volumes?q=intitle:{titulo_formatado}"
 
     response = requests.get(url)
 
     if response.status_code == 200:
         dados = response.json()
 
-        if "docs" in dados and len(dados["docs"]) > 0:
-            livro = dados["docs"][0]
-            titulo = livro.get("title", "Não disponível")
+        if "items" in dados and len(dados["items"]) > 0:
+            livro = dados["items"][0]["volumeInfo"]
 
-            autor = ", ".join(livro.get("author_name", ["Não disponível"]))
-            logger.debug(f"AUTOR: {autor}")
+            title = livro.get("title", "Não disponível")
 
-            ano = livro.get("first_publish_year", "Não disponível")
-            logger.debug(f"ANO: {ano}")
+            authors = ", ".join(livro.get("authors", ["Não disponível"]))
+            logger.debug(f"AUTOR: {authors}")
 
-            subject_key = ", ".join(livro.get("subject_key", ["Não disponível"]))
-            logger.debug(f"SUBJECT KEY: {subject_key}")
+            description = livro.get("description", "Não disponível")
+            logger.debug(f"DESCRIÇÃO: {description}")
 
-            subject = ", ".join(livro.get("subject", ["Não disponível"]))
-            logger.debug(f"SUBJECT: {subject}")
+            pageCount = livro.get("pageCount", "Não disponível")
+            logger.debug(f"PÁGINAS: {pageCount}")
 
-            subject_facet = ", ".join(livro.get("subject_facet", ["Não disponível"]))
-            logger.debug(f"SUBJECT FACET: {subject_facet}")
+            genero = ", ".join(livro.get("categories", ["Não disponível"]))
+            logger.debug(f"GÊNERO: {genero}")
 
             return {
-                "Título": titulo,
-                "Autor": autor,
-                "Ano de Publicação": ano,
-                "Subject": subject,
-                "Subject Key": subject_key,
-                "Subject Facet": subject_facet,
+                "Título": title,
+                "Autor": authors,
+                "Descrição": description,
+                "Páginas": pageCount,
+                "Gêneros": genero,
             }
         else:
             return {
                 "Título": titulo,
                 "Autor": "Não encontrado",
-                "Ano de Publicação": "Não disponível",
-                "Subject": "Não disponível",
-                "Subject Key": "Não disponível",
-                "Subject Facet": "Não disponível",
+                "Descrição": "Não disponível",
+                "Páginas": "Não disponível",
+                "Gêneros": "Não disponível",
             }
     else:
         logger.error(f"Erro na requisição: {response.status_code}")
@@ -73,6 +69,6 @@ def processar_livros(arquivo_txt, arquivo_excel):
     logger.success(f"Os dados foram salvos no arquivo {arquivo_excel}.")
 
 
-arquivo_txt = "app/data/livros.txt"
-arquivo_excel = "app/data/result_API.xlsx"
+arquivo_txt = "app/aux_data/livros.txt"
+arquivo_excel = "app/aux_data/result_API2.xlsx"
 processar_livros(arquivo_txt, arquivo_excel)
