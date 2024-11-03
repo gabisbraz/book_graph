@@ -1,0 +1,30 @@
+2
+5
+0 "Lolita"
+1 "Twilight"
+2 "Oliver Twist"
+3 "Dracula"
+4 "Throne of Glass"
+20
+2 3 7 ['Contos Infantis', 'Ficção', 'Ficção Britânica', 'Ficção Infantil', 'Ficção Juvenil', 'Literatura', 'Referência']
+2 0 1 ['Ficção']
+2 1 3 ['Ficção', 'Ficção Infantil', 'Ficção Juvenil']
+2 4 4 ['Ficção', 'Ficção Infantil', 'Ficção Juvenil', 'Ficção de Crime']
+3 2 7 ['Contos Infantis', 'Ficção', 'Ficção Britânica', 'Ficção Infantil', 'Ficção Juvenil', 'Literatura', 'Referência']
+3 0 4 ['Contos', 'Drama', 'Ficção', 'Romance']
+3 1 10 ['Contos', 'Ficção', 'Ficção Adaptada', 'Ficção Científica', 'Ficção Fantástica', 'Ficção Infantil', 'Ficção Juvenil', 'Ficção de Horror', 'Quadrinhos', 'Romance']
+3 4 7 ['Aventura', 'Contos', 'Ficção', 'Ficção Fantástica', 'Ficção Infantil', 'Ficção Juvenil', 'Romance']
+0 2 1 ['Ficção']
+0 3 4 ['Contos', 'Drama', 'Ficção', 'Romance']
+0 1 4 ['Contos', 'Ficção', 'Ficção Juvenil', 'Romance']
+0 4 3 ['Contos', 'Ficção', 'Romance']
+1 2 3 ['Ficção', 'Ficção Infantil', 'Ficção Juvenil']
+1 3 10 ['Contos', 'Ficção', 'Ficção Adaptada', 'Ficção Científica', 'Ficção Fantástica', 'Ficção Infantil', 'Ficção Juvenil', 'Ficção de Horror', 'Quadrinhos', 'Romance']
+1 0 4 ['Contos', 'Ficção', 'Ficção Juvenil', 'Romance']
+1 4 6 ['Contos', 'Ficção', 'Ficção Fantástica', 'Ficção Infantil', 'Ficção Juvenil', 'Romance']
+4 2 4 ['Ficção', 'Ficção Infantil', 'Ficção Juvenil', 'Ficção de Crime']
+4 3 7 ['Aventura', 'Contos', 'Ficção', 'Ficção Fantástica', 'Ficção Infantil', 'Ficção Juvenil', 'Romance']
+4 0 3 ['Contos', 'Ficção', 'Romance']
+4 1 6 ['Contos', 'Ficção', 'Ficção Fantástica', 'Ficção Infantil', 'Ficção Juvenil', 'Romance']
+
+

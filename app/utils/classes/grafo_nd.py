@@ -182,9 +182,9 @@ class TGrafoND:
         Imprime a lista de adjacência do grafo, incluindo os nomes dos livros associados a cada vértice.
         """
         if not self.lista_adjacencia:
-            print("A lista de adjacência está vazia.")
+            print("A lista de adjacência está vazia.\n")
         else:
-            print("Lista de Adjacência:")
+            print("Lista de Adjacência:\n")
             for vertice_id, arestas in self.lista_adjacencia.items():
                 # Obtém o nome do livro associado ao vértice
                 nome_livro = self.vertices[vertice_id].nome_livro
@@ -194,7 +194,7 @@ class TGrafoND:
                         for aresta in arestas
                     ]
                 )
-                print(f"{vertice_id} ('{nome_livro}') -> {arestas_str}")
+                print(f"{vertice_id} ('{nome_livro}') -> {arestas_str}\n")
 
     def imprimeRelacaoVertices(self):
         """

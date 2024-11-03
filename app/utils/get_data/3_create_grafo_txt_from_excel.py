@@ -1,6 +1,6 @@
 import pandas as pd
 
-file_path = "app/aux_data/result_API_livros.xlsx"
+file_path = "app/aux_data/copy.xlsx"
 xls = pd.ExcelFile(file_path)
 
 df = pd.read_excel(file_path, sheet_name="Sheet1")
@@ -23,6 +23,6 @@ for _, row in df.iterrows():
     genero = row["Gênero"].split(", ")
     grafo_lines.append(f"{v1_idx} {v2_idx} {peso} {genero}\n")
 
-grafo_file_path = "app/data/input/grafo.txt"
+grafo_file_path = "app/data/input/grafo_5.txt"
 with open(grafo_file_path, "w") as file:
     file.writelines(grafo_lines)
