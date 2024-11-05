@@ -84,12 +84,16 @@ Escolha uma das opções abaixo:
 
         # LER DADOS DO ARQUIVO
         if opcao == "1":
-            graph_object.leArquivo(nome_arquivo="app/data/input/grafo_5.txt")
+            graph_object.leArquivo(
+                nome_arquivo=str(Path(DIR_ROOT, "app/data/input/grafo_5.txt"))
+            )
             print("Leitura do grafo realizada com sucesso!")
 
         # GRAVAR DADOS NO ARQUIVO
         elif opcao == "2":
-            graph_object.gravarGrafo(nome_arquivo="app/data/output/grafo_5.txt")
+            graph_object.gravarGrafo(
+                nome_arquivo=str(Path(DIR_ROOT, "app/data/output/grafo_5.txt"))
+            )
             print("Gravação do grafo realizada com sucesso!")
 
         # INSERIR UM VÉRTICE
