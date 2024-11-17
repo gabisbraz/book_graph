@@ -478,6 +478,56 @@ class TGrafoND:
         # Renderiza o grafo e salva como um arquivo HTML
         net.show(filename)
 
+    def recomendar_livros(self, generos_interesse):
+        """
+        Recomenda livros com base nos gêneros informados pelo usuário.
+
+        Args:
+            generos_interesse (list): Lista de gêneros de interesse do usuário.
+
+        Returns:
+            None: Exibe a lista de livros recomendados com os gêneros em comum.
+        """
+        if not self.vertices:
+            print(
+                "O grafo está vazio. Adicione livros antes de solicitar recomendações."
+            )
+            return
+
+        print("\n=== GÊNEROS DISPONÍVEIS ===")
+        # Coleta todos os gêneros únicos presentes no grafo
+        generos_disponiveis = set(
+            genero
+            for arestas in self.lista_adjacencia.values()
+            for aresta in arestas
+            for genero in aresta.generos_comuns
+        )
+        for genero in sorted(generos_disponiveis):
+            print(f"- {genero}")
+
+        print("\n=== RECOMENDAÇÕES ===")
+        recomendacoes = []
+
+        # Itera sobre os vértices e suas arestas para identificar livros que compartilham os gêneros de interesse
+        for vertice in self.vertices:
+            generos_livro = set(
+                genero
+                for arestas in self.lista_adjacencia[vertice.id]
+                for genero in arestas.generos_comuns
+            )
+            # Encontra os gêneros em comum entre os interesses do usuário e os gêneros do livro
+            generos_comuns = generos_livro.intersection(generos_interesse)
+
+            if generos_comuns:
+                recomendacoes.append((vertice.nome_livro, generos_comuns))
+
+        if recomendacoes:
+            for livro, generos_comuns in recomendacoes:
+                generos_str = ", ".join(generos_comuns)
+                print(f"- Livro: {livro} | Gêneros em comum: {generos_str}")
+        else:
+            print("Nenhum livro encontrado com os gêneros informados.")
+
 
 # Exemplo de uso
 if __name__ == "__main__":

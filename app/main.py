@@ -75,8 +75,9 @@ Escolha uma das opções abaixo:
 11) Verificar se o grafo é Euleriano
 12) Verificar se o grafo admite ciclo Hamiltoniano
 13) Colorir grafo
-14) Renderizar grafo visual
-15) Sair\n"""
+14) Recomendação de livros por gênero
+15) Renderizar grafo visual
+16) Sair\n"""
         )
 
         # RECEBE A OPÇÃO ESCOLHIDA PELO USUÁRIO
@@ -85,14 +86,14 @@ Escolha uma das opções abaixo:
         # LER DADOS DO ARQUIVO
         if opcao == "1":
             graph_object.leArquivo(
-                nome_arquivo=str(Path(DIR_ROOT, "app/data/input/grafo_5.txt"))
+                nome_arquivo=str(Path(DIR_ROOT, "app/data/input/grafo.txt"))
             )
             print("Leitura do grafo realizada com sucesso!")
 
         # GRAVAR DADOS NO ARQUIVO
         elif opcao == "2":
             graph_object.gravarGrafo(
-                nome_arquivo=str(Path(DIR_ROOT, "app/data/output/grafo_5.txt"))
+                nome_arquivo=str(Path(DIR_ROOT, "app/data/output/grafo.txt"))
             )
             print("Gravação do grafo realizada com sucesso!")
 
@@ -185,10 +186,20 @@ Escolha uma das opções abaixo:
 
         # RENDERIZAR O GRAFO VISUAL
         elif opcao == "14":
+            generos_interesse = input(
+                "Digite os gêneros de interesse, separados por vírgulas: "
+            ).split(",")
+            generos_interesse = [
+                g.strip() for g in generos_interesse
+            ]  # Remove espaços em branco extras
+            graph_object.recomendar_livros(generos_interesse)
+
+        # RENDERIZAR O GRAFO VISUAL
+        elif opcao == "15":
             graph_object.renderizar_grafo()
 
         # SAIR DO PROGRAMA
-        elif opcao == "15":
+        elif opcao == "16":
             logger.info("Saindo...")
             break
 
