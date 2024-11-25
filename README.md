@@ -16,3 +16,4 @@ Nosso projeto contempla o Objetivo de Desenvolvimento Sustentável (ODS) 4, que 
 
 **Justificativa:** A promoção da leitura e o acesso à informação são fundamentais para uma educação de qualidade. Ao conectar livros de maneira significativa, a aplicação não apenas enriquece o conhecimento dos usuários, mas também fomenta um ambiente de aprendizado colaborativo e interativo. Assim, estamos contribuindo para a formação de cidadãos mais informados e críticos, alinhando-nos ao ODS 4 e ajudando a construir uma sociedade mais educada e consciente.
 
+CANVAS: https://www.canva.com/design/DAGXUTMQ6hI/AIrRZDSzN0WCOWTY-U1Jtg/view?utm_content=DAGXUTMQ6hI&utm_campaign=designshare&utm_medium=link&utm_source=editor
